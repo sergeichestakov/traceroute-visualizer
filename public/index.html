@@ -5,12 +5,18 @@
     <title>Traceroute Visualizer</title>
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
 	<style>
-        body { margin:0; padding:0; }
+        body { margin:0; padding:0;}
         #map { position:absolute; top:0; bottom:0; width:100%; }
+        #search-bar {position: absolute; display: inline-block; top: 5%; right: 30%; width:40%; height: 10%; z-index: 10;}
+        #search-button {position:absolute; display:inline-block; top:5%; right: 25%; height: 10%; z-index: 10;}
     </style>
 	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   </head>
   <body>
+    <div style='width: 100%; text-align: center;'>
+        <input id='search-bar'  type="text" name="search" placeholder="Enter a website or IP Address"> 
+        <button type="submit" id='search-button'>Search</button>
+    </div>
  	<div id='map'></div>
 
 	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
