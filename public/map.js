@@ -14,3 +14,20 @@ map.addControl(new mapboxgl.GeolocateControl({
     },
     trackUserLocation: true
 }));
+
+const form = document.getElementById('form');
+
+form.addEventListener('submit', e => {
+    e.preventDefault();
+    const searchBar = document.getElementById('search-bar')
+    const value = searchBar.value
+    if(value) { //Send nonempty value to server
+		const request = new XMLHttpRequest();
+		request.open('POST', '/request', true);
+		request.setRequestHeader('Content-Type', 'application/json')
+		request.send(JSON.stringify({
+			value: value
+		}));
+    }
+    searchBar.value = '' //Reset
+}, false);
