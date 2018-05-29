@@ -15,12 +15,61 @@ map.addControl(new mapboxgl.GeolocateControl({
     trackUserLocation: true
 }));
 
+// Create a GeoJSON source with an empty lineString.
+let geojson = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [
+                []
+            ]
+        }
+ 	}]
+}
+
+const animatePath = (coordinates) => {
+	// start by showing just the first coordinate
+	geojson.features[0].geometry.coordinates = [coordinates[0]];
+
+	// add it to the map
+	map.addSource('trace', { type: 'geojson', data: geojson });
+	map.addLayer({
+		"id": "trace",
+		"type": "line",
+		"source": "trace",
+		"paint": {
+			"line-color": "red",
+			"line-opacity": 0.75,
+			"line-width": 5
+		}
+	});
+
+	// setup the viewport
+	map.jumpTo({ 'center': coordinates[0], 'zoom': 10 });
+
+	// on a regular basis, add more coordinates from the saved list and update the map
+	let index = 0
+	const timer = setInterval(() => {
+		if (index < coordinates.length) {
+			geojson.features[0].geometry.coordinates.push(coordinates[index]);
+			map.getSource('trace').setData(geojson);
+			map.panTo(coordinates[index]);
+			index++;
+		} else {
+			clearInterval(timer)
+		}
+	}, 100);
+}
+
 const form = document.getElementById('form');
 
 form.addEventListener('submit', e => {
     e.preventDefault();
     const searchBar = document.getElementById('search-bar')
     const value = searchBar.value
+
     if(value) { //Send nonempty value to server
        fetch('/request', {
             method: 'POST',
@@ -32,7 +81,16 @@ form.addEventListener('submit', e => {
         .then(res => {
             if(res.ok) {
                 res.json().then(data => {
-                    console.log(data)
+					let coords = []
+                   	for(const key in data){
+						const lat = data[key].lat
+						const lon = data[key].lon
+
+						if(lat && lon){
+							coords.push([lon, lat]);
+						}
+					}
+            		animatePath(coords)
                 })
             }
         })
