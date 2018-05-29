@@ -22,12 +22,20 @@ form.addEventListener('submit', e => {
     const searchBar = document.getElementById('search-bar')
     const value = searchBar.value
     if(value) { //Send nonempty value to server
-		const request = new XMLHttpRequest();
-		request.open('POST', '/request', true);
-		request.setRequestHeader('Content-Type', 'application/json')
-		request.send(JSON.stringify({
-			value: value
-		}));
+       fetch('/request', {
+            method: 'POST',
+            body: JSON.stringify({value: value}),
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            if(res.ok) {
+                res.json().then(data => {
+                    console.log(data)
+                })
+            }
+        })
     }
     searchBar.value = '' //Reset
 }, false);

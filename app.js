@@ -8,24 +8,25 @@ app.use(bodyParser.json()) // to support JSON-encoded bodies
 app.use(express.json())
 app.use(express.static(__dirname + '/public'));
 
-app.get('/', (req, res) =>
+app.get('/', (req, res) => {
     res.sendFile('index.html')
-)
+})
 
 app.post('/request', (req, res) => {
     const value = req.body.value
-    console.log(value)
+
 	traceroute.trace(value, (err,hops) => {
-		if (err) { //Handle error
-			console.log(err)
+		if (err) { //Send empty response and break
+			res.json({})
+			return
 		}
 
         const IPs = extractIPs(hops)
         const requestJSON = generateJSON(IPs)
 
-        request.post({ url:'http://ip-api.com/batch?fields=lat,lon', json: true, body: requestJSON }, (err, res, body) => {
+        request.post({ url:'http://ip-api.com/batch?fields=lat,lon', json: true, body: requestJSON }, (error, result, body) => {
             if(err) console.log(err)
-            console.log(body)
+           	res.json(body)
         })
 	})
 })
