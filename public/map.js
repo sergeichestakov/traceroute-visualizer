@@ -90,20 +90,27 @@ form.addEventListener('submit', e => {
         })
         .then(res => {
             if(res.ok) {
-                res.json().then(data => {
-					let coords = []
-                   	for(const key in data){
-						const lat = data[key].lat
-						const lon = data[key].lon
-
-						if(lat && lon){
-							coords.push([lon, lat]);
-						}
-					}
-            		animatePath(coords)
-                })
+                res.json().then(data => processData(data))
             }
         })
     }
     searchBar.value = '' //Reset
 }, false);
+
+const processData = data => {
+    const obj = JSON.parse(data)
+    const response = obj.response
+    console.log(response)
+
+    let coords = []
+    for(const key in response){
+        const geoip = response[key].geoip
+
+        const lat = geoip.latitude
+        const lon = geoip.longitude
+        if(lat && lon){
+            coords.push([lon, lat]);
+        }
+    }
+    animatePath(coords)
+}
